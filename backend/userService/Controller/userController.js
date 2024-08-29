@@ -33,7 +33,18 @@ const registerUser = asyncHandler(async (req, res) => {
 });
 
 const authUser = asyncHandler(async (req, res) => {
-  const { email, password } = req.body;
+  const { email, password,token } = req.body;
+  if (token) {
+    try {
+   
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+      res.json({ message: "Token is verified", userId: decoded.id });
+      return; 
+    } catch (error) {
+      res.status(401).json({ message: "Invalid token" });
+      return; 
+    }
+  }
   const user = await Users.findOne({ email });
   if (user && (await bcrypt.compare(password, user.password))) {
     res.json({

@@ -3,6 +3,7 @@ const app = express();
 const dotenv = require('dotenv')
 const connectDB = require('./config/db')
 const PORT = process.env.PORT || 7000;
+const colors = require('colors');
 const userRoutes = require('./Routes/userRoute')
 
 app.use(express.json())
@@ -15,5 +16,5 @@ app.get('/', (req, res) => {
 app.use("/api/user",userRoutes)
 
 app.listen(PORT, () => {
-  console.log(`Server is running on http://localhost:${PORT} `.bgBrightYellow.bold.underline);
+  console.log(`user-server is running on http://localhost:${PORT} `.bgGreen.bold.underline);
 });
