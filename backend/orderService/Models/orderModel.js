@@ -1,7 +1,6 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
-
 const orderSchema = new Schema({
   orderNumber: {
     type: String,
@@ -32,6 +31,18 @@ const orderSchema = new Schema({
   ],
   totalAmount: {
     type: Number,
+    required: true,
+  },
+  shippingAddress: {
+    street: { type: String, required: true },
+    city: { type: String, required: true },
+    state: { type: String, required: true },
+    postalCode: { type: String, required: true },
+    country: { type: String, required: true },
+  },
+  paymentMethod: {
+    type: String,
+    enum: ['Credit Card', 'PayPal', 'Bank Transfer', 'Cash on Delivery'],
     required: true,
   },
   orderDate: {
