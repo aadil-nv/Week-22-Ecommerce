@@ -4,9 +4,9 @@ const generateOrderId = require("../config/genarateOrderId");
 
 
 const createOrder = async (userId, productId, product) => {
-  console.log("User ID:", userId.id);
+  console.log("User ID:", userId);
   console.log("Product ID:", productId);
- const customerId = userId.id
+ const customerId = userId
   if (!userId || !productId) {
     throw new Error("User ID and Product ID are required.");
   }

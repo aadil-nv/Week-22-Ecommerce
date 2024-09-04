@@ -19,13 +19,20 @@ app.use(express.json());
     const q = 'ORDER';
     await ch.assertQueue(q, { durable: false });
     ch.consume('ORDER', async (data) => {
-      const { productId, product, userId } = JSON.parse(data.content.toString());
-      console.log('Consuming order queue');
-      console.log('Product ID:', productId);
-      console.log('Products:', product);
-      console.log('User ID:', userId);
-
       try {
+        console.log("publish data : ",JSON.parse(data.content.toString()))
+        const { productId, product, userId } = JSON.parse(data.content.toString());
+        
+
+        if (!userId) {
+          throw new Error('userId is undefined');
+        }
+
+        console.log('Consuming order queue');
+        console.log('Product ID orderser:', productId);
+        console.log('Products:', product);
+        console.log('User rrrr ID:', userId);
+
         const order = await createOrder(userId, productId, product);
         console.log('Order created successfully:', order);
         ch.ack(data);  // Acknowledge the message only after the order is successfully created
@@ -49,7 +56,6 @@ app.use((err, req, res, next) => {
   console.error('Server Error:', err);
   res.status(500).send('Something went wrong!');
 });
-
 app.listen(PORT, () => {
   console.log(`Order server is running on http://localhost:${PORT}`.bgGreen.bold.underline);
 });

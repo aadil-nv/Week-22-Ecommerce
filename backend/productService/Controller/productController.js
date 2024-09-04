@@ -122,34 +122,43 @@ const deleteProduct = asyncHandler(async (req,res)=>{
   }
 })
 
+
 const buyProduct = asyncHandler(async (req, res) => {
-  const { productId} = req.body;
-  console.log("Produc id is ============",productId);
-  
-  const userId = req.user;
-  console.log("userId is ============",userId);
+  const { productId } = req.body;
+
+  console.log("Product ID is ============", productId);
+
+  console.log("req.user : ",req.user);
+  // Ensure userId is extracted correctly
+  const userId = req.user ? req.user.id : null;  // Assuming req.user contains the user's details
+
+  if (!userId) {
+    console.error("User ID is missing or undefined.");
+    return res.status(400).json({ message: 'User ID is required' });
+  }
+
+  console.log("User ID is ============", userId);
 
   const product = await Products.findById(productId);
   if (!product) return res.status(404).json({ message: 'Product not found' });
-  
+
   try {
-      const conn = await amqp.connect('amqp://localhost:5672');
-      const ch = await conn.createChannel();
-      const queue = 'ORDER';
-      const data = JSON.stringify({productId,product,userId });
+    const conn = await amqp.connect('amqp://localhost:5672');
+    const ch = await conn.createChannel();
+    const queue = 'ORDER';
+    const data = JSON.stringify({ productId, product, userId });
 
-      await ch.assertQueue(queue, { durable: false });
-      ch.sendToQueue(queue, Buffer.from(data));
+    await ch.assertQueue(queue, { durable: false });
+    ch.sendToQueue(queue, Buffer.from(data));
 
-      console.log(`Sent to queue ${queue}: ${data}`);
+    console.log(`Sent to queue ${queue}: ${data}`);
   } catch (error) {
-      console.error('AMQP Error:', error);
-      return res.status(500).json({ message: 'Internal server error' });
+    console.error('AMQP Error:', error);
+    return res.status(500).json({ message: 'Internal server error' });
   }
 
   res.status(201).json({ message: 'Order created and message sent to queue' });
 });
-
 
 
 module.exports = {
