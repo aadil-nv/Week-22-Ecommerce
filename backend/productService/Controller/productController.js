@@ -1,7 +1,7 @@
 const asyncHandler = require("express-async-handler");
 const Products = require('../Models/productModel')
 const Category = require('../Models/categoryModel')
-
+const amqp = require('amqplib');
 
 const addProduct = asyncHandler(async (req,res)=>{
     const {productname,productdescription,productprice,category,countInStock}=req.body;
@@ -122,9 +122,39 @@ const deleteProduct = asyncHandler(async (req,res)=>{
   }
 })
 
+const buyProduct = asyncHandler(async (req, res) => {
+  const { productId} = req.body;
+  console.log("Produc id is ============",productId);
+  
+  const userId = req.user;
+  console.log("userId is ============",userId);
+
+  const product = await Products.findById(productId);
+  if (!product) return res.status(404).json({ message: 'Product not found' });
+  
+  try {
+      const conn = await amqp.connect('amqp://localhost:5672');
+      const ch = await conn.createChannel();
+      const queue = 'ORDER';
+      const data = JSON.stringify({productId,product,userId });
+
+      await ch.assertQueue(queue, { durable: false });
+      ch.sendToQueue(queue, Buffer.from(data));
+
+      console.log(`Sent to queue ${queue}: ${data}`);
+  } catch (error) {
+      console.error('AMQP Error:', error);
+      return res.status(500).json({ message: 'Internal server error' });
+  }
+
+  res.status(201).json({ message: 'Order created and message sent to queue' });
+});
+
+
 
 module.exports = {
     addProduct,
     editProduct,
-    deleteProduct
+    deleteProduct,
+    buyProduct
 }

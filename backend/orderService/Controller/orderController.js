@@ -2,71 +2,29 @@ const asyncHandler = require("express-async-handler");
 const Orders = require("../Models/orderModel");
 const generateOrderId = require("../config/genarateOrderId");
 
-const addOrder = asyncHandler(async (req, res) => {
-  const { customer, items, totalAmount, shippingAddress, paymentMethod } =
-    req.body;
 
-  if (!customer) {
-    return res
-      .status(400)
-      .json({ message: "Customer information is required." });
+const createOrder = async (userId, productId, product) => {
+  console.log("User ID:", userId.id);
+  console.log("Product ID:", productId);
+ const customerId = userId.id
+  if (!userId || !productId) {
+    throw new Error("User ID and Product ID are required.");
   }
 
-  if (!Array.isArray(items) || items.length === 0) {
-    return res
-      .status(400)
-      .json({ message: "Items must be a non-empty array." });
-  }
-
-  for (const item of items) {
-    if (!item.product) {
-      return res
-        .status(400)
-        .json({ message: "Each item must have a product reference." });
-    }
-    if (!item.quantity || item.quantity <= 0) {
-      return res
-        .status(400)
-        .json({ message: "Each item must have a positive quantity." });
-    }
-    if (!item.price || item.price <= 0) {
-      return res
-        .status(400)
-        .json({ message: "Each item must have a positive price." });
-    }
-  }
-
-  if (!totalAmount || totalAmount <= 0) {
-    return res
-      .status(400)
-      .json({ message: "Total amount must be a positive number." });
-  }
-
-  if (!shippingAddress) {
-    return res.status(400).json({ message: "Shipping address is required." });
-  }
-
-  if (!paymentMethod) {
-    return res.status(400).json({ message: "Payment method is required." });
+  if (!product) {
+    throw new Error("Product details are required.");
   }
 
   const orderData = await Orders.create({
-    orderNumber: generateOrderId(),
-    customer,
-    items,
-    totalAmount,
-    shippingAddress,
-    paymentMethod,
+    orderNumber: generateOrderId(), 
+    customer: customerId, 
+    items: [{ product: productId, quantity: 1, price: product.productprice }], 
+    totalAmount: product.productprice, 
   });
 
-  if (!orderData) {
-    return res.status(400).json({ message: "Failed to create order." });
-  }
+  return orderData;
+};
 
-  return res
-    .status(201)
-    .json({ message: "Order created successfully.", orderData });
-});
 
 const cancelOrder = asyncHandler(async (req, res) => {
   const { orderId } = req.body;
@@ -86,6 +44,6 @@ const cancelOrder = asyncHandler(async (req, res) => {
 
 
 module.exports = {
-  addOrder,
+  createOrder,
   cancelOrder,
 };

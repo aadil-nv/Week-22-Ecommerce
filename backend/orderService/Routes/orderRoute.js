@@ -4,7 +4,7 @@ const orderControler = require('../Controller/orderController')
 
 
 
-orderRouter.post('/add-order',orderControler.addOrder)
+orderRouter.post('/create-order',orderControler.createOrder)
 orderRouter.patch('/cancel-order',orderControler.cancelOrder)
 
 

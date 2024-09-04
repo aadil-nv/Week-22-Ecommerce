@@ -1,7 +1,7 @@
 const express = require('express')
 const userRouter =express.Router()
 const userControler = require('../Controller/userController')
-
+const isAuthenticated = require('../Middleware/isAuthenticated.js')
 
 
 userRouter.post('/',userControler.registerUser)
