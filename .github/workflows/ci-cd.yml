@@ -54,5 +54,5 @@ jobs:
 
     - name: Build & Push API Gateway
       run: |
-        docker build -t aadilnv/ecommerce-gateway:latest ../../api-gateway
+        docker build -t aadilnv/ecommerce-gateway:latest ./api-gateway
         docker push aadilnv/ecommerce-gateway:latest
