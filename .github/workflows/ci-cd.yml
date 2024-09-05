@@ -24,7 +24,7 @@ jobs:
 
     - name: Install Dependencies and Build Each Service
       run: |
-        cd backend/services/userService
+        cd C:\Users\adile\OneDrive\Desktop\Week-22-Project-1\backend\userService
         npm ci
         npm run build
         cd ../postService
