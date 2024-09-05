@@ -39,17 +39,17 @@ jobs:
 
     - name: Build & Push User Service
       run: |
-        docker build -t aadilnv/ecommerce-user:latest ./backend/services/userService
+        docker build -t aadilnv/ecommerce-user:latest C:\Users\adile\OneDrive\Desktop\Week-22-Project-1\backend\userService
         docker push aadilnv/ecommerce-user:latest
 
     - name: Build & Push Product Service
       run: |
-        docker build -t aadilnv/ecommerce-product:latest ./backend/services/productService
+        docker build -t aadilnv/ecommerce-product:latest C:\Users\adile\OneDrive\Desktop\Week-22-Project-1\backend\productService
         docker push aadilnv/ecommerce-product:latest
 
     - name: Build & Push Order Service
       run: |
-        docker build -t aadilnv/ecommerce-order:latest ./backend/services/orderService
+        docker build -t aadilnv/ecommerce-order:latest C:\Users\adile\OneDrive\Desktop\Week-22-Project-1\backend\orderService
         docker push aadilnv/ecommerce-order:latest
 
     - name: Build & Push API Gateway
