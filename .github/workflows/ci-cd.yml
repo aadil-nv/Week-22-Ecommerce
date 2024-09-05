@@ -33,7 +33,7 @@ jobs:
         npm ci
         npm run build || echo "No build script found for ordertService"
 
-        cd ./api-gateway
+        cd ../../api-gateway
         npm ci
         npm run build || echo "No build script found for gateway"
 
