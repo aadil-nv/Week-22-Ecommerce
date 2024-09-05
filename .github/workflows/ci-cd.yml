@@ -1,65 +1,69 @@
-# This is the CI/CD pipeline for the blog microservices project
+# This workflow will do a clean installation of node dependencies, cache/restore them, build the source code and run tests across different versions of node
+
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-nodejs
+
 name: CI/CD for Microservices Blog Project
 
 on:
   push:
-    branches: [ main ]
+    branches: [ "main" ]
   pull_request:
-    branches: [ main ]
+    branches: [ "main" ]
 
 jobs:
-  build-and-deploy:
+  build:
     runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [16.x, 18.x]
+        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
     steps:
     - uses: actions/checkout@v4
 
-    - name: Set up Node.js
-      uses: actions/setup-node@v4
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v3
       with:
-        node-version: '20.x'
+        node-version: ${{ matrix.node-version }}
+        cache: 'npm'
 
-    # Log in to Docker Hub using secrets
-    - name: Log in to Docker Hub
-      run: |
-        echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+    - run: npm ci
+    - run: npm run build --if-present
+    - run: npm test --if-present
 
-    # Install Dependencies and Build Each Service
-    - name: Install Dependencies and Build Each Service
-      run: |
-        cd backend/services/userService
-        npm ci
-        npm run build
-        cd ../postService
-        npm ci
-        npm run build
-        cd ../commentService
-        npm ci
-        npm run build
-        cd ../../gateway
-        npm ci
-        npm run build
+    - name: Build and Push Docker Image - User Service
+      uses: mr-smithers-excellent/docker-build-push@v6
+      with:
+        image: aadilnv/ecommerce-user
+        registry: docker.io
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
+        dockerfile: ./backend/services/userService/Dockerfile
 
-    # Build & Push User Service
-    - name: Build & Push User Service
-      run: |
-        docker build -t aadilnv/ecommerce-user:latest ./backend/services/userService
-        docker push aadilnv/ecommerce-user:latest
+    - name: Build and Push Docker Image - Product Service
+      uses: mr-smithers-excellent/docker-build-push@v6
+      with:
+        image: aadilnv/ecommerce-product
+        registry: docker.io
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
+        dockerfile: ./backend/services/productService/Dockerfile
 
-    # Build & Push Product Service
-    - name: Build & Push Product Service
-      run: |
-        docker build -t aadilnv/ecommerce-product:latest ./backend/services/productService
-        docker push aadilnv/ecommerce-product:latest
+    - name: Build and Push Docker Image - Order Service
+      uses: mr-smithers-excellent/docker-build-push@v6
+      with:
+        image: aadilnv/ecommerce-order
+        registry: docker.io
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
+        dockerfile: ./backend/services/orderService/Dockerfile
 
-    # Build & Push Order Service
-    - name: Build & Push Order Service
-      run: |
-        docker build -t aadilnv/ecommerce-order:latest ./backend/services/orderService
-        docker push aadilnv/ecommerce-order:latest
-
-    # Build & Push API Gateway
-    - name: Build & Push API Gateway
-      run: |
-        docker build -t aadilnv/ecommerce-gateway:latest ./api-gateway
-        docker push aadilnv/blog-gateway:latest
+    - name: Build and Push Docker Image - API Gateway
+      uses: mr-smithers-excellent/docker-build-push@v6
+      with:
+        image: aadilnv/ecommerce-gateway
+        registry: docker.io
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
+        dockerfile: ./api-gateway/Dockerfile
