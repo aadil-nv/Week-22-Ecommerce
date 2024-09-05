@@ -1,5 +1,9 @@
+<<<<<<< HEAD
 
 name: CI/CD for Microservices Blog Project
+=======
+name: Node.js CI
+>>>>>>> 398386ff173816602d6a01316b360d63b37a58e6
 
 on:
   push:
@@ -8,18 +12,53 @@ on:
     branches: [ main ]
 
 jobs:
-  build-and-deploy:
+  build_services:
     runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        service: [services/user-authentication, services/product, services/order, apiGateway]
+        node-version: ["20.x"]
 
     steps:
     - uses: actions/checkout@v4
 
-    - name: Set up Node.js
+    - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v4
       with:
-        node-version: '20.x'
+        node-version: ${{ matrix.node-version }}
+        cache: 'npm'
+
+    - name: Check for lock files
+      run: |
+        echo "Checking for lock files in ${{ matrix.service }}"
+        ls -la ./${{ matrix.service }}
+        echo "Lock file check complete."
+
+    - name: Install dependencies
+      run: npm ci
+      working-directory: ./${{ matrix.service }}
+
+    - name: Build services
+      run: npm run build --if-present
+      working-directory: ./${{ matrix.service }}
+
+    - name: Run tests
+      run: npm test --if-present
+      working-directory: ./${{ matrix.service }}
+
+  docker_build_and_push:
+    runs-on: ubuntu-latest
+    needs: build_services
+
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v2
 
     - name: Log in to Docker Hub
+<<<<<<< HEAD
       run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
 
     - name: Install Dependencies and Build Each Service
@@ -56,3 +95,20 @@ jobs:
       run: |
         docker build -t aadilnv/ecommerce:latest ./api-gateway
         docker push aadilnv/blog-gateway:latest
+=======
+      uses: docker/login-action@v2
+      with:
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
+
+    - name: Build and push docker images
+      run: |
+        docker build -t aadilnv/user-service:latest ./services/user-authentication
+        docker build -t aadilnv/product-service:latest ./services/product
+        docker build -t aadilnv/order-service:latest ./services/order
+        docker build -t aadilnv/ecommerce-apiGateway:latest ./apiGateway
+        docker push aadilnv/user-service:latest
+        docker push aadilnv/product-service:latest
+        docker push aadilnv/order-service:latest
+        docker push aadilnv/ecommerce-apiGateway:latest
+>>>>>>> 398386ff173816602d6a01316b360d63b37a58e6
