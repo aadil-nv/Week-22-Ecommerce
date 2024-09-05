@@ -1,5 +1,3 @@
-
-
 name: Node.js CI
 
 on:
@@ -17,7 +15,6 @@ jobs:
         service: [services/user-authentication, services/product, services/order, apiGateway]
         node-version: [18.x, 20.x, 22.x]
 
-
     steps:
     - uses: actions/checkout@v4
 
@@ -26,6 +23,12 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
+
+    - name: Check for lock files
+      run: |
+        echo "Checking for lock files in ${{ matrix.service }}"
+        ls -la ./${{ matrix.service }}
+        echo "Lock file check complete."
 
     - name: Install dependencies
       run: npm ci
@@ -60,10 +63,8 @@ jobs:
         docker build -t aadilnv/user-service:latest ./services/user-authentication
         docker build -t aadilnv/product-service:latest ./services/product
         docker build -t aadilnv/order-service:latest ./services/order
-        
         docker build -t aadilnv/ecommerce-apiGateway:latest ./apiGateway
         docker push aadilnv/user-service:latest
         docker push aadilnv/product-service:latest
         docker push aadilnv/order-service:latest
-        
         docker push aadilnv/ecommerce-apiGateway:latest
