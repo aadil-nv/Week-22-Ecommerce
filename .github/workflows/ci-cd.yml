@@ -32,8 +32,8 @@ jobs:
         cd ../orderService
         npm ci
         npm run build || echo "No build script found for ordertService"
-        
-        cd C:\Users\adile\OneDrive\Desktop\Week-22-Project-1
+
+        cd api-gateway
         npm ci
         npm run build || echo "No build script found for gateway"
 
