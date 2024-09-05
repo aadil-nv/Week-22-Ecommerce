@@ -1,4 +1,3 @@
-
 name: CI/CD for Microservices Blog Project
 
 on:
@@ -24,7 +23,7 @@ jobs:
 
     - name: Install Dependencies and Build Each Service
       run: |
-        cd C:\Users\adile\OneDrive\Desktop\Week-22-Project-1\backend\userService
+        cd backend/userService
         npm ci
         npm run build
         cd ../postService
@@ -33,26 +32,26 @@ jobs:
         cd ../commentService
         npm ci
         npm run build
-        cd ../../gateway
+        cd ../gateway
         npm ci
         npm run build
 
     - name: Build & Push User Service
       run: |
-        docker build -t aadilnv/ecommerce-user:latest C:\Users\adile\OneDrive\Desktop\Week-22-Project-1\backend\userService
+        docker build -t aadilnv/ecommerce-user:latest backend/userService
         docker push aadilnv/ecommerce-user:latest
 
     - name: Build & Push Product Service
       run: |
-        docker build -t aadilnv/ecommerce-product:latest C:\Users\adile\OneDrive\Desktop\Week-22-Project-1\backend\productService
+        docker build -t aadilnv/ecommerce-product:latest backend/productService
         docker push aadilnv/ecommerce-product:latest
 
     - name: Build & Push Order Service
       run: |
-        docker build -t aadilnv/ecommerce-order:latest C:\Users\adile\OneDrive\Desktop\Week-22-Project-1\backend\orderService
+        docker build -t aadilnv/ecommerce-order:latest backend/orderService
         docker push aadilnv/ecommerce-order:latest
 
     - name: Build & Push API Gateway
       run: |
-        docker build -t aadilnv/ecommercer:latest ./api-gateway
+        docker build -t aadilnv/ecommercer:latest api-gateway
         docker push aadilnv/blog-gateway:latest
