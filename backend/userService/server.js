@@ -6,6 +6,7 @@ const PORT = process.env.PORT || 7000;
 const colors = require('colors');
 const userRoutes = require('./Routes/userRoute')
 
+// bkdfbkhbkshdbhfjksbdf
 app.use(express.json())
 dotenv.config()
 connectDB()
