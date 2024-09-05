@@ -26,13 +26,13 @@ jobs:
         cd backend/userService
         npm ci
         npm run build || echo "No build script found for userService"
-        cd ../productService
+        cd backend/productService
         npm ci
         npm run build || echo "No build script found for postService"
-        cd ../orderService
+        cd backend/orderService
         npm ci
         npm run build || echo "No build script found for commentService"
-        cd ../api-gateway
+        cd C:\Users\adile\OneDrive\Desktop\Week-22-Project-1
         npm ci
         npm run build || echo "No build script found for gateway"
 
