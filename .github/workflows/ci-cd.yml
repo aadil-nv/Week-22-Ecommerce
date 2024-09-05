@@ -1,4 +1,4 @@
-# This is the CI/CD pipeline for the blog microservices project
+
 name: CI/CD for Microservices Blog Project
 
 on:
