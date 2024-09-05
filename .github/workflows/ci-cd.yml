@@ -29,7 +29,7 @@ jobs:
         cd ../productService
         npm ci
         npm run build || echo "No build script found for postService"
-        cd ../commentService
+        cd ../orderService
         npm ci
         npm run build || echo "No build script found for commentService"
         cd ../api-gateway
