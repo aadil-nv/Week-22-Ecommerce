@@ -4,6 +4,7 @@
   "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
+     "build": "echo 'No build script specified!'",
     "start": "nodemon server.js"
   },
   "author": "",
@@ -16,6 +17,7 @@
     "express": "^4.19.2",
     "express-async-handler": "^1.2.0",
     "jsonwebtoken": "^9.0.2",
+    "lodash": "^4.17.21",
     "mon": "^0.0.8",
     "mongodb": "^6.8.0",
     "mongoose": "^8.5.4",

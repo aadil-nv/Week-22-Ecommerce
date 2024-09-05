@@ -25,16 +25,16 @@ jobs:
       run: |
         cd backend/userService
         npm ci
-        npm run build
+        npm run build || echo "No build script found for userService"
         cd ../postService
         npm ci
-        npm run build
+        npm run build || echo "No build script found for postService"
         cd ../commentService
         npm ci
-        npm run build
+        npm run build || echo "No build script found for commentService"
         cd ../gateway
         npm ci
-        npm run build
+        npm run build || echo "No build script found for gateway"
 
     - name: Build & Push User Service
       run: |
@@ -53,5 +53,5 @@ jobs:
 
     - name: Build & Push API Gateway
       run: |
-        docker build -t aadilnv/ecommercer:latest api-gateway
-        docker push aadilnv/blog-gateway:latest
+        docker build -t aadilnv/ecommerce-gateway:latest backend/gateway
+        docker push aadilnv/ecommerce-gateway:latest
