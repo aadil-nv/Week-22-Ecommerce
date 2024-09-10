@@ -32,7 +32,15 @@ const addCategory = asyncHandler(async (req, res) => {
   }
 });
 
+const allCategory =asyncHandler(async (req,res)=>{
+  const categoryData = await Category.find()
+  if(categoryData){
+    res.status(200).json({message:"All category data is ",categoryData})
+  }
+})
+
 
 module.exports={
-    addCategory
+    addCategory,
+    allCategory
 }

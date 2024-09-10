@@ -2,6 +2,8 @@ const asyncHandler = require("express-async-handler");
 const Products = require('../Models/productModel')
 const Category = require('../Models/categoryModel')
 const amqp = require('amqplib');
+const Order = require("../../orderService/Models/orderModel");
+const crypto = require('crypto');
 
 const addProduct = asyncHandler(async (req,res)=>{
     const {productname,productdescription,productprice,category,countInStock}=req.body;
@@ -123,42 +125,58 @@ const deleteProduct = asyncHandler(async (req,res)=>{
 })
 
 
+
 const buyProduct = asyncHandler(async (req, res) => {
   const { productId } = req.body;
-
+  
   console.log("Product ID is ============", productId);
-
-  console.log("req.user : ",req.user);
+  
+  console.log("req.user : ", req.user);
   // Ensure userId is extracted correctly
   const userId = req.user ? req.user.id : null;  // Assuming req.user contains the user's details
-
+  
   if (!userId) {
     console.error("User ID is missing or undefined.");
     return res.status(400).json({ message: 'User ID is required' });
   }
-
+  
   console.log("User ID is ============", userId);
-
+  
   const product = await Products.findById(productId);
   if (!product) return res.status(404).json({ message: 'Product not found' });
-
+  
   try {
     const conn = await amqp.connect('amqp://localhost:5672');
     const ch = await conn.createChannel();
     const queue = 'ORDER';
+    const replyQueue = 'ORDER_REPLY';
+
     const data = JSON.stringify({ productId, product, userId });
 
     await ch.assertQueue(queue, { durable: false });
+    await ch.assertQueue(replyQueue, { durable: false });
+
+    // Send order request to the ORDER queue
     ch.sendToQueue(queue, Buffer.from(data));
 
     console.log(`Sent to queue ${queue}: ${data}`);
+
+    // Wait for a reply in the ORDER_REPLY queue
+    ch.consume(replyQueue, (msg) => {
+      if (msg) {
+        const order = JSON.parse(msg.content.toString());
+        ch.ack(msg);
+        conn.close(); // Close connection once done
+        return res.status(201).json({ message: 'Order created and response received', order });
+      }
+    }, { noAck: false });
   } catch (error) {
     console.error('AMQP Error:', error);
     return res.status(500).json({ message: 'Internal server error' });
   }
-
-  res.status(201).json({ message: 'Order created and message sent to queue' });
 });
+
+
 
 
 module.exports = {

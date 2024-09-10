@@ -5,7 +5,7 @@ const isAuthenticated = require('../Middleware/isAuthenticated.js')
 
 
 userRouter.post('/',userControler.registerUser)
-userRouter.get('/login',userControler.authUser)
+userRouter.get('/login',isAuthenticated,userControler.authUser)
 userRouter.get('/all-users-data',userControler.allUserData)
 
 module.exports = userRouter
