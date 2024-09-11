@@ -1,7 +1,7 @@
 const express = require('express');
 const app = express();
 const dotenv = require('dotenv');
-const connectDB = require('./config/db'); // Correct import
+const connectDB = require('./config/db'); 
 const PORT = process.env.PORT || 6000;
 const colors = require('colors');
 const productRoutes = require('./Routes/productRoute');
@@ -9,7 +9,7 @@ const categoryRoutes = require('./Routes/categoryRoute');
 const amqp = require('amqplib');
 
 dotenv.config();
-connectDB(); // Ensure it's called correctly
+connectDB(); 
 
 app.use(express.json());
 

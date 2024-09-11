@@ -132,8 +132,8 @@ const buyProduct = asyncHandler(async (req, res) => {
   console.log("Product ID is ============", productId);
   
   console.log("req.user : ", req.user);
-  // Ensure userId is extracted correctly
-  const userId = req.user ? req.user.id : null;  // Assuming req.user contains the user's details
+
+  const userId = req.user ? req.user.id : null;  
   
   if (!userId) {
     console.error("User ID is missing or undefined.");

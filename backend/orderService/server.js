@@ -12,7 +12,7 @@ dotenv.config();
 connectDB();
 app.use(express.json());
 
-// Create a channel to listen to RabbitMQ messages
+
 async function sugu() {
   try {
     const conn = await amqp.connect("amqp://localhost:5672");
